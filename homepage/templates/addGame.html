@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add a Game</title>
+
+    <style>
+        body {
+            background-color: #1c1c1c;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #ff8800;
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 20px auto;
+        }
+
+        label, input[type="text"], input[type="submit"] {
+            color: #ffffff;
+            margin-bottom: 10px;
+            display: block;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #333;
+            border: 1px solid #555;
+        }
+
+        input[type="submit"] {
+            background-color: #ff8800;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Add A Game To Review:</h1>
+    
+    <div>
+        <form method="POST" action="{% url 'addGameProcessing' %}">
+            {% csrf_token %}
+            <label for="addGameName">Game Name</label>
+            <input type="text" id="addGameName" name="addGameName" ><br><br>
+            <label for="addGameUrl">Game Thumbnail Picture (url)</label>
+            <input type="text" id="addGameUrl" name="addGameUrl" ><br><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1 @@
+web gunicorn gamereview.wsgi:application --log-file -

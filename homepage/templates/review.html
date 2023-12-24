@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Specific Review Page</title>
+
+    <style>
+        body {
+            background-color: #1c1c1c;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3, h4, h5 {
+            color: #ff8800;
+        }
+
+        #gameOwnerName {
+            color: #ff8800;
+        }
+
+        .gameImage {
+            width: 300px; 
+            height: 250px; 
+            object-fit: contain;
+        }
+
+        #reviewInputBox {
+            background-color: #333;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        label{
+            color: papayawhip;
+            margin-bottom: 10px;
+
+        } 
+        
+        input[type="text"], input[type="submit"] {
+            color: black;
+            margin-bottom: 10px;
+        }
+
+        .userCommentList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .reviewList {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #555;
+            background-color: #333;
+        }
+
+        .delCommentFormClass {
+            display: none;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div>
+        <h1><a href="/">Game Review For: {{gameName}}</a></h1>
+        <img class="gameImage" src="{{gameImageUrl}}" alt="No Image Provided">
+        <h2>Rating: {{avgGameRating}}</h2>
+        <h3>Published by: <span id="gameOwnerName">{{gameOwner}}</span></h3>
+    </div>
+    <div>
+        <h2>User comments:</h2>
+
+        <div id="reviewInputBox">
+            <h4>Add a review:</h4>
+            <form method="POST" action="{% url 'addComment' %}">
+                {% csrf_token %}
+                <input type="text" class="gameName" name="gameName" value = "{{gameName}}" hidden><br><br>
+                <label for="reviewerName">By:</label>
+                <input type="text" id="reviewerName" name="reviewerName" value = "{{currUser}}" readonly="readonly"><br><br>
+                <label>Rate from 1 to 5:</label>
+                <select name="ratingVal" id="ratingVal">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+                <br><br>
+                <label for="reviewerComment">Comments:</label>
+                <input type="text" id="reviewerComment" name="reviewerComment" required><br><br>
+                <input type="submit" value="Submit">
+              </form>
+            
+            
+            
+        </div> 
+        <ul class="userCommentList">
+            {% for comment in comments %}
+                <li class="reviewList">
+                    <h4 class="reviewerNameOutput">User: {{ comment.username }}</h4>
+                    <h5 class="reviewerRatingOutput">Rating: {{ comment.rating }}</h5>
+                    <h5 class="reviewerCommentOutput">comment: {{ comment.comment }}</h5>
+                    <form method="POST" action="{% url 'delComment' %}" class="delCommentFormClass">
+                        {% csrf_token %}
+                            <input type="text" class="gameName" name="gameName" value="{{gameName}}" hidden>
+                            <input type="text" class="userComment" name="userComment" value="{{comment.comment}}" hidden>
+                            <input type="text" class="userRating" name="userRating" value="{{comment.rating}}" hidden>
+                            <input type="text" class="delComment" name="delComment" value="{{comment.username}}" hidden><br>
+                        <input type="submit" value="Delete Comment">
+                    </form>
+                </li>
+                
+            {% endfor %}
+        </ul>
+    </div>
+    <div>
+       
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', ()=>{
+           let reviewerName = document.getElementById('reviewerName') 
+           let currUser = document.getElementById('reviewerName')
+           if (reviewerName.value !== "False"){
+               
+               document.getElementById('reviewInputBox').style.display="block"
+              
+           }else{
+               
+               document.getElementById('reviewInputBox').style.display="none"
+               
+           }
+    
+           //disables the delete comment buttons if current user is not the game's publisher
+           let allDelCommentBtns = document.getElementsByClassName("delCommentFormClass")
+    
+           for (let i =0; i < allDelCommentBtns.length; i++){
+               if(currUser.value === document.getElementById("gameOwnerName").innerText){
+               console.log("passed: curruser:", currUser.value, " owner:", document.getElementById("gameOwnerName").innerText)
+               allDelCommentBtns[i].style.display="block"
+           }else{
+               console.log("failed: curruser:", currUser.value, " owner:", document.getElementById("gameOwnerName").innerText)
+               allDelCommentBtns[i].style.display="none"
+           }
+           }
+           
+        })
+    </script>
+</body>
+
+
+
+</html>
+
+

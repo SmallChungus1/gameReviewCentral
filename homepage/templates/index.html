@@ -1,0 +1,225 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Review Home</title>
+
+    <style>
+        body {
+            background-color: #1c1c1c;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            color: #ff8800;
+        }
+
+        #sessionUsername {
+            color: #ff8800;
+        }
+
+        #LogInPageButton, #LogOutPageButton, #addGameButton {
+            background-color: #ff8800;
+            color: #1c1c1c;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        #searchGameForm {
+            margin-top: 20px;
+        }
+
+        label{
+            color: papayawhip;
+            margin-bottom: 10px;
+
+        } 
+        
+        input[type="text"], input[type="submit"] {
+            color: black;
+            margin-bottom: 10px;
+        }
+
+        .gameCardList {
+            list-style: none;
+            display: flex;
+            overflow-x: auto;
+            padding: 0;
+            margin: 0;
+        }
+
+        .card {
+            margin-right: 20px;
+            border: 1px solid #555;
+            padding: 10px;
+            width: 250px;
+            height: 400px;
+            flex: 0 0 auto;
+            background-color: #333;
+        }
+
+        .gameImage {
+            width: 100%; 
+            height: 70%; 
+            object-fit: contain;
+        }
+
+        .gameName, .avgGameRating {
+            color: #ff8800;
+        }
+    </style>
+    
+</head>
+<body>
+
+
+
+<div>
+    <h1>Game Review Central</h1>
+    <h3>User: <span id="sessionUsername">{{sessionUsername}}</span></h3>
+    <button id="LogInPageButton">LogIn Page</button>
+
+    <form id="loginForm" method="GET" action="{% url 'userLogout' %}">
+        <button id="LogOutPageButton">Log Out</button>
+    </form>
+
+    <form id="addGameForm" method="GET" action="{% url 'addingGame' %}">
+        <button id="addGameButton">Add game</button>
+    </form>
+
+    <div>
+        <form id="searchGameForm" method="POST" action="{% url 'searchFor' %}">
+            {% csrf_token %}
+            <label for="gameSearchName">Search for a game:</label><br>
+            <input type="text" id="gameSearchName" name="gameSearchName">
+            <input type="submit" value="search">
+        </form>
+    </div>
+   
+    <h2>Highest Rated</h2>
+    <ul class="gameCardList">
+        {% for item in items %}
+            <li class="card">
+                <h2 class="gameName">{{ item.gameName }}</h2>
+                <h3 class="avgGameRating">{{ item.avgGameRating }}</h3>
+                <img class="gameImage" src="{{ item.gameImageUrl }}" alt="No Image Provided">
+            </li>
+        {% endfor %}
+    </ul>
+    
+    <h2>Games with no reviews:</h2>
+    <ul class="gameCardList">
+        {% for item in itemsNoReview %}
+            <li class="card">
+                <h2 class="gameName">{{ item.gameName }}</h2>
+                <h3 class="avgGameRating">{{ item.avgGameRating }}</h3>
+                <img class="gameImage" src="{{ item.gameImageUrl }}" alt="No Image Provided">
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+
+<script>
+
+    if(document.getElementById("sessionUsername").innerText === "Not Logged In"){
+        document.getElementById("addGameButton").style.display="none"
+        document.getElementById("LogInPageButton").style.display="block"
+    }else{
+        document.getElementById("addGameButton").style.display="block"
+        document.getElementById("LogInPageButton").style.display="none"
+    }
+
+   
+    document.addEventListener('DOMContentLoaded', ()=>{
+        
+
+        
+        let redirectedUrl = null
+        let cardElements = document.getElementsByClassName('card')
+        for(let i = 0; i < cardElements.length; i++){
+            cardElements[i].addEventListener('click', ()=>{
+            console.log("clicked")
+
+            let currentCard = cardElements[i]
+            console.log(currentCard.querySelector('.gameName').innerHTML) //example of how to get the gameName and stuff from html
+            const data = {'gameName': currentCard.querySelector('.gameName').innerHTML, 'avgGameRating':currentCard.querySelector('.avgGameRating').innerHTML, "gameImageURL":currentCard.querySelector('.gameImage').innerHTML}
+            fetch(`/viewreview/${currentCard.querySelector('.gameName').innerHTML}`, { 
+                method: 'GET',
+
+            })
+                .then(response=>{
+                    console.log(response)
+                    if(!response.ok){
+                        console.log(`response indicates error: ${response.status}`)
+                    }
+                    else{
+                        redirectedUrl = response.url;
+                        console.log("redURL: ", redirectedUrl)
+                    }
+                    response.json()
+                })
+                .then(data=>{
+    
+                    if(redirectedUrl){
+                        window.location.href = redirectedUrl
+                    }else{
+                        console.error("url cant be accessed")
+                    }
+                } )
+                .catch(err => console.error(err))
+            
+        })
+        }
+        
+        document.getElementById("LogInPageButton").addEventListener('click', ()=>{
+            let redirectedUrl = null
+            fetch(`/login/`)
+            .then(response=>{
+                    console.log(response)
+                    if(!response.ok){
+                        console.log(`response indicates error: ${response.status}`)
+                    }
+                    else{
+                        redirectedUrl = response.url;
+                        console.log("redURL: ", redirectedUrl)
+                    }
+                    response.json()
+                })
+                .then(data=>{
+    
+                    if(redirectedUrl){
+                        window.location.href = redirectedUrl
+                    }else{
+                        console.error("url cant be accessed")
+                    }
+                } )
+                .catch(err => console.error(err))
+        })
+
+ }) 
+           
+
+</script>
+
+
+
+</body>
+
+
+</html>
+
+

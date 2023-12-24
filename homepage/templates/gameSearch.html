@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Searching Game</title>
+
+    <style>
+        body {
+            background-color: #1c1c1c;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .gameCardList {
+            list-style: none;
+            display: flex;
+            overflow-x: auto;
+            padding: 0;
+            margin: 0;
+        }
+
+        .card {
+            margin-right: 20px;
+            border: 1px solid #555;
+            padding: 10px;
+            width: 250px;
+            height: 400px;
+            flex: 0 0 auto;
+            background-color: #333;
+        }
+
+        .gameImage {
+            width: 100%; 
+            height: 70%; 
+            object-fit: contain;
+        }
+
+        #gameName, #avgGameRating {
+            color: #ff8800;
+        }
+    </style>
+</head>
+<body>
+    <ul class="gameCardList">
+        {% for item in items %}
+            <li class="card">
+                <h2 id="gameName">{{ item.gameName }}</h2>
+                <h3 id="avgGameRating">{{ item.avgGameRating }}</h3>
+                <img class="gameImage" src="{{ item.gameImageUrl }}" id="gameImageID">
+            </li>
+        {% endfor %}
+    </ul>
+
+<script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+       
+
+       
+       let redirectedUrl = null
+       let cardElements = document.getElementsByClassName('card')
+       for(let i = 0; i < cardElements.length; i++){
+           cardElements[i].addEventListener('click', ()=>{
+           console.log("clicked")
+
+           let currentCard = cardElements[i]
+           console.log(currentCard.querySelector('#gameName').innerHTML) //example of how to get the gameName and stuff from html
+           const data = {'gameName': currentCard.querySelector('#gameName').innerHTML, 'avgGameRating':currentCard.querySelector('#avgGameRating').innerHTML, "gameImageURL":currentCard.querySelector('#gameImageID').innerHTML}
+           fetch(`/viewreview/${currentCard.querySelector('#gameName').innerHTML}`, { 
+               method: 'GET',
+
+           })
+               .then(response=>{
+                   console.log(response)
+                   if(!response.ok){
+                       console.log(`response indicates error: ${response.status}`)
+                   }
+                   else{
+                       redirectedUrl = response.url;
+                       console.log("redURL: ", redirectedUrl)
+                   }
+                   response.json()
+               })
+               .then(data=>{
+   
+                   if(redirectedUrl){
+                       window.location.href = redirectedUrl
+                   }else{
+                       console.error("url cant be accessed")
+                   }
+               } )
+               .catch(err => console.error(err))
+           
+       })
+       }
+       })
+</script>
