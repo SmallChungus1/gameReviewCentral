@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-=bcov5y%*$-d=pg9uxslu1e!h1q!7+!c^wzkmtlor^l_4so*b#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ec2-3-144-199-141.us-east-2.compute.amazonaws.com', '3.144.199.141', 'localhost', '127.0.0.1', 'gamereviewcentral-baed019d01e9.herokuapp.com/']
+ALLOWED_HOSTS = ['ec2-3-144-199-141.us-east-2.compute.amazonaws.com', '3.144.199.141', 'localhost', '127.0.0.1', 'gamereviewcentral.herokuapp.com']
 
 
 # Application definition
