@@ -1,8 +1,7 @@
 import pymongo
+from connectionUrl import URLs
 
-url='mongodb+srv://123:123@cluster0.nuvlq6v.mongodb.net/?retryWrites=true&w=majority'
-
-client = pymongo.MongoClient(url)
+client = pymongo.MongoClient(URLs.mongoURL)
 
 db = client['gamereview']
 dbUser = client['user']
